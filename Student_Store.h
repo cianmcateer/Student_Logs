@@ -30,32 +30,17 @@ private:
     std::map<std::string,std::vector<Student> > school_data; // Local storage
     std::set<Student> records; // Permenant record of students
 
-    Student_Log logs;
-
     std::set<Student> read_school_records();
+    std::set<Student> get_records();
+
+
     std::map<std::string,std::vector<Student> > read_file();
-    std::map<std::string,std::vector<Student> > back_up_data();
+
     void replace_characters(Student& s, char old_char, char new_char);
     void get_count(int& i);
     bool teacher_exists(std::string teacher);
     std::string lower_case(std::string word);
     std::map<std::string,float> get_means();
-
-    template <typename T>
-    float sum(std::vector<T>& vec);
-
-    template <typename T>
-    float mean(std::vector<T>& vec);
-
-    template <typename T>
-    float st_dev(std::vector<T>& vec);
-
-    template <typename T>
-    float meadian(std::vector<T>& vec);
-
-    template <typename T>
-    std::vector<T> vec_minus_mean(std::vector<T>& vec);
-
 
 public:
     // Constructor / Destructor

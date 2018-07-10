@@ -4,43 +4,13 @@
 * Constructor reads saved data into map, also Initialises our record set and log stack
 */
 Student_Store::Student_Store()
-: school_data(Student_Store::read_file()), records(read_school_records()), logs(Student_Log()) {}
+: school_data(Student_Store::read_file()), records(read_school_records()) {}
 
 /**
 * Destructor
 */
 Student_Store::~Student_Store() {}
 
-/**
-* Returns a map of teachers and students that will be called if file read fails
-* @return map
-*/
-std::map<std::string,std::vector<Student> > Student_Store::back_up_data() {
-
-    std::map<std::string,std::vector<Student> > map;
-
-    Student s1("Cian McAteer",13,15,44,"Good");
-    Student s2("Matthew Fitzsimons",14,77,44,"Excellent");
-    Student s3("Greg Hughes",16,11,33,"Bad attitude");
-    std::vector<Student> vec1;
-    vec1.push_back(s1);
-    vec1.push_back(s2);
-    vec1.push_back(s3);
-
-    Student s4("Jamie samuel",10,13,22,"Excellent");
-    Student s5("micky samuel",11,23,52,"good effort");
-    Student s6("Jamie jones",12,12,11,"Wonderful");
-    std::vector<Student> vec2;
-    vec2.push_back(s4);
-    vec2.push_back(s5);
-    vec2.push_back(s6);
-
-    map["Barbara Jones"] = vec1;
-    map["John McDonald"] = vec2;
-
-    return map;
-
-}
 /**
 * Getter for school_data used in output_stream operator override
 * @return school_data
@@ -73,7 +43,7 @@ void Student_Store::replace_characters(Student& s, char old_char, char new_char)
 */
 void Student_Store::add(std::string& teacher, const Student& s) {
     school_data[teacher].push_back(s);
-    logs.add_log(s.get_name() + " was added on");
+    Student_Log::add_log(s.get_name() + " was added on");
 }
 
 /**
@@ -81,7 +51,7 @@ void Student_Store::add(std::string& teacher, const Student& s) {
 */
 void Student_Store::clear() {
     school_data.clear();
-    logs.add_log("School database cleared on");
+    Student_Log::add_log("School database cleared on");
 }
 
 /**
@@ -125,8 +95,7 @@ void Student_Store::update(std::string& teacher,int index,std::string name, int 
     if(comment != "s") {
         school_data[teacher].at(index).set_comment(comment);
     }
-
-    logs.add_log("Student updated");
+    Student_Log::add_log("Student updated");
 }
 
 /**
@@ -135,10 +104,7 @@ void Student_Store::update(std::string& teacher,int index,std::string name, int 
 * @return bool
 */
 bool Student_Store::is_full(std::string& teacher) {
-    if(school_data[teacher].size() > 30) {
-        return true;
-    }
-    return false;
+    return school_data[teacher].size() > 30;
 }
 
 /**
@@ -174,8 +140,6 @@ void Student_Store::print(std::vector<Student>& students) {
 * @return map
 */
 std::map<std::string,std::vector<Student> > Student_Store::read_file() {
-
-
     std::ifstream student_file;
     // Set 'FILE' variable to false to use test2.txt
     FILE ? student_file.open("test1.txt") : student_file.open("test2.txt"); // test2.txt // test1.txt
@@ -209,8 +173,7 @@ std::map<std::string,std::vector<Student> > Student_Store::read_file() {
 
         student_file.close();
     } else {
-        map = back_up_data();
-        std::cerr << "Error: Could access file, Backup data has been implemented." << std::endl;
+        std::cerr << "Error: Could access file" << std::endl;
     }
     return map;
 }
@@ -270,7 +233,7 @@ void Student_Store::create_group(std::string& teacher) {
         school_data[teacher] = new_group;
         std::cout << teacher.substr(0,teacher.find(' ')) << " class has been created" << std::endl;
     }
-    logs.add_log(teacher + "'s Group was created on");
+    Student_Log::add_log(teacher + "'s Group was created on");
 }
 
 /**
@@ -286,7 +249,7 @@ void Student_Store::remove_group(std::string& teacher) {
 
     if(iter != school_data.end()) {
         school_data.erase(iter);
-        logs.add_log(teacher + "'s group was removed on ");
+        Student_Log::add_log(teacher + "'s group was removed on ");
     } else {
         std::cout << "Teacher not found" << std::endl;
     }
@@ -321,7 +284,7 @@ void Student_Store::remove_student(std::string& teacher, int& index) {
     for(unsigned int i = 0;i < school_data[teacher].size();++i) {
         if(index == i) {
             school_data[teacher].erase(school_data[teacher].begin() + i);
-            logs.add_log("A student in " + teacher + "'s group was removed on");
+            Student_Log::add_log("A student in " + teacher + "'s group was removed on");
         }
     }
 }
@@ -627,51 +590,6 @@ std::vector<float> Student_Store::get_all_gpa() {
 }
 
 /**
-* Calculates the sum of a templated vector
-*/
-template <typename T>
-float Student_Store::sum(std::vector<T>& vec) {
-    float total = 0;
-    for(unsigned int i = 0;i < vec.size();++i) {
-        total += vec.at(i);
-    }
-    return total;
-}
-
-/**
-* Returns the mean of a templated vector
-* @param vec
-* @return float
-*/
-template <typename T>
-float Student_Store::mean(std::vector<T>& vec) {
-    return sum(vec) / vec.size();
-}
-
-/**
-*
-*/
-template <typename T>
-float Student_Store::st_dev(std::vector<T>& vec) {
-    float st_dev = 0.0;
-
-    for(unsigned int i = 0; i < vec.size(); ++i) {
-        st_dev += pow(vec[i] - mean(vec), 2);
-    }
-
-    return sqrt(st_dev / vec.size());
-}
-
-template <typename T>
-std::vector<T> Student_Store::vec_minus_mean(std::vector<T>& vec) {
-    std::vector<T> vec_minus_mean;
-    for(unsigned int i = 0;i < vec.size();++i) {
-        vec_minus_mean.push_back(vec.at(i) - mean(vec));
-    }
-    return vec_minus_mean;
-}
-
-/**
 * Calculates pearson coeffiecient of two vectors
 * both int and float vectors use the same template methods
 * @param vec1
@@ -764,7 +682,6 @@ void Student_Store::clean_records() {
     } else {
         std::cerr << "Unable to clean records" << std::endl;
     }
-
 }
 
 /**
@@ -783,5 +700,5 @@ void Student_Store::read_records() {
 * values reassigned after all values are popped off
 */
 void Student_Store::print_log() {
-    std::cout << logs << std::endl;
+    std::cout << Student_Log();
 }
