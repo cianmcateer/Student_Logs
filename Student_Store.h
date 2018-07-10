@@ -5,7 +5,6 @@
 #include <vector>
 #include <queue>
 #include <set>
-#include <stack>
 #include <string>
 #include <fstream>
 #include <algorithm>
@@ -13,9 +12,9 @@
 #include <cstring>
 #include <cctype>
 #include <math.h>
-#include <ctime>
 
 #include "Student.h"
+#include "Student_Log.h"
 #include "util.h"
 
 // Set to false to use second text file
@@ -30,11 +29,8 @@ private:
 
     std::map<std::string,std::vector<Student> > school_data; // Local storage
     std::set<Student> records; // Permenant record of students
-    std::stack<std::string> logs;
 
-    std::stack<std::string> read_log();
-    std::string get_time();
-    void add_log(std::string message);
+    Student_Log logs;
 
     std::set<Student> read_school_records();
     std::map<std::string,std::vector<Student> > read_file();

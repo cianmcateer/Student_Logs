@@ -4,7 +4,7 @@
 * Constructor reads saved data into map, also Initialises our record set and log stack
 */
 Student_Store::Student_Store()
-: school_data(Student_Store::read_file()), records(read_school_records()), logs(read_log()) {}
+: school_data(Student_Store::read_file()), records(read_school_records()), logs(Student_Log()) {}
 
 /**
 * Destructor
@@ -73,7 +73,7 @@ void Student_Store::replace_characters(Student& s, char old_char, char new_char)
 */
 void Student_Store::add(std::string& teacher, const Student& s) {
     school_data[teacher].push_back(s);
-    add_log(s.get_name() + " was added on");
+    logs.add_log(s.get_name() + " was added on");
 }
 
 /**
@@ -81,7 +81,7 @@ void Student_Store::add(std::string& teacher, const Student& s) {
 */
 void Student_Store::clear() {
     school_data.clear();
-    add_log("School database cleared on");
+    logs.add_log("School database cleared on");
 }
 
 /**
@@ -126,7 +126,7 @@ void Student_Store::update(std::string& teacher,int index,std::string name, int 
         school_data[teacher].at(index).set_comment(comment);
     }
 
-    add_log("Student updated");
+    logs.add_log("Student updated");
 }
 
 /**
@@ -270,7 +270,7 @@ void Student_Store::create_group(std::string& teacher) {
         school_data[teacher] = new_group;
         std::cout << teacher.substr(0,teacher.find(' ')) << " class has been created" << std::endl;
     }
-    add_log(teacher + "'s Group was created on");
+    logs.add_log(teacher + "'s Group was created on");
 }
 
 /**
@@ -286,7 +286,7 @@ void Student_Store::remove_group(std::string& teacher) {
 
     if(iter != school_data.end()) {
         school_data.erase(iter);
-        add_log(teacher + "'s group was removed on ");
+        logs.add_log(teacher + "'s group was removed on ");
     } else {
         std::cout << "Teacher not found" << std::endl;
     }
@@ -321,7 +321,7 @@ void Student_Store::remove_student(std::string& teacher, int& index) {
     for(unsigned int i = 0;i < school_data[teacher].size();++i) {
         if(index == i) {
             school_data[teacher].erase(school_data[teacher].begin() + i);
-            add_log("A student in " + teacher + "'s group was removed on");
+            logs.add_log("A student in " + teacher + "'s group was removed on");
         }
     }
 }
@@ -779,72 +779,9 @@ void Student_Store::read_records() {
 }
 
 /**
-* Returns current GMT time as string
-* @return ss
-*/
-std::string Student_Store::get_time() {
-    // current date/time based on current system
-   time_t now = time(0);
-
-   // convert now to string form
-   char* dt = ctime(&now);
-
-   // convert now to tm struct
-   tm *gmtm = gmtime(&now);
-   dt = asctime(gmtm);
-
-   // Add to string stream so we can convert to string
-   std::stringstream ss;
-   ss << dt;
-
-   // Convert to string before return
-   return ss.str();
-}
-
-/**
-* Adds message and time method was called to log file
-* @param message
-*/
-void Student_Store::add_log(std::string message) {
-    // Append students instead of overwritting students
-    std::ofstream user_log("logs.txt",std::fstream::in | std::ios::out | std::ios::app);
-    if(user_log.is_open()) {
-       user_log << message << " " << get_time();
-       std::cout << std::endl;
-    } else {
-        std::cerr << "Unable to open log file" << std::endl;
-    }
-}
-
-/**
-* Returns a stack of all log messages from text file
-* @return logs
-*/
-std::stack<std::string> Student_Store::read_log() {
-    std::ifstream user_log("logs.txt");
-    std::stack<std::string> logs;
-    if(user_log.is_open()) {
-
-        std::string line;
-        while(getline(user_log, line)) {
-            logs.push(line);
-        }
-    } else {
-        std::cerr << "Could not read log file" << std::endl;
-    }
-    return logs;
-}
-
-/**
 * Prints logs First in last out
 * values reassigned after all values are popped off
 */
 void Student_Store::print_log() {
-
-    while(!logs.empty()) {
-        // Print last element added to stack
-        std::cout << logs.top() << std::endl;
-        logs.pop(); // Pop element off to print next element
-    }
-    logs = read_log(); // Reassign elements to stack
+    std::cout << logs << std::endl;
 }

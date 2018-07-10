@@ -66,7 +66,7 @@ void init() {
     while(!is_password(password_attempt)) {
         if(attempt < 1) {
             cout << "Access Denied, system has shut down!" << endl;
-            exit(0);
+            return;
         }
         --attempt;
         cout << "Incorrect Password, try again" << endl;
