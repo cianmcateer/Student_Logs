@@ -1,0 +1,46 @@
+body {
+    background: steelblue;
+    font-family: "Verdana", arial;
+}
+
+h1 {
+    color : white;
+    font-size: 60px;
+    text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.title {
+    font-weight:bold;
+}
+
+h2 {
+    color : white;
+    font-size: 45px;
+    text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    max-width: 800px;
+    height: 320px;
+    border-collapse: collapse;
+    border: 1px solid #38678f;
+    margin: 50px auto;
+    background: white;
+    border-radius: 1em;
+}
+
+td {
+    border-right: 1px solid #cccccc;
+    padding: 10px;
+    transition: all 0.2s;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5%;
+}
